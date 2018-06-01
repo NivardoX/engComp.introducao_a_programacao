@@ -4,7 +4,7 @@
 
 FILE *pgm;
 FILE *pgmSuave;
-
+int m, n;
 //protótipos
 //aloca a matriz com a resolucao passada
 unsigned char** criarMatriz(int x,int y);
@@ -16,6 +16,8 @@ void tratarImagem(unsigned char **M2,unsigned char **M,int x,int y);
 void criarNovoArquivo(unsigned char **M2,char *saidaNome,int x,int y,int lim);
 //bordea com 0
 void bordear(unsigned char **M,int x,int y);
+//
+unsigned char pos(unsigned char **M,int x,int y);
 
 int main(){
 
@@ -23,7 +25,7 @@ int main(){
 	
     char pgmNome[30];
     char pgmSuaveNome[30];
-    int m, n, scale, element, limite;
+    int scale, element, limite;
     printf("Digite o nome do arquivo a ser suavizado: ");
     scanf("%s", pgmNome);
     printf("Digite o nome do arquivo a ser criado: ");
@@ -141,4 +143,8 @@ void criarNovoArquivo(unsigned char **M2,char *saidaNome,int x,int y,int lim){
 			fprintf(pgm,"%c ", M2[i][j]);
 		}
 	}
+}
+
+unsigned char pos(unsigned char **M,int x,int y){
+	return *(M+(m*x) + y);
 }
