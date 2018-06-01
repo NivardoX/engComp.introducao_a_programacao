@@ -9,17 +9,17 @@ FILE *pgmSuave;
 //aloca a matriz com a resolucao passada
 unsigned char** criarMatriz(int x,int y);
 //pega os caracteres ASCII da imagem e joga na matriz M
-void lerImagem(	unsigned char M**,int x,int y);
+void lerImagem(	unsigned char **M,int x,int y);
 //faz a suavizacao com janela 3x3, pega a origem de M e poe a saida em M2
-void tratarImagem(unsigned char M2**,unsigned char M**,int x,int y);
+void tratarImagem(unsigned char **M2,unsigned char **M,int x,int y);
 //criar arquivo tradado
-void criarNovoArquivo(unsigned char M2**,char saidaNome*,int x,int y,int lim);
+void criarNovoArquivo(unsigned char **M2,char *saidaNome,int x,int y,int lim);
 //bordea com 0
-void bordear(unsigned char M**,int x,int y);
+void bordear(unsigned char **M,int x,int y);
 
 int main(){
 
-	unsigned char M**;
+	unsigned char **M;
 	
     char pgmNome[30];
     char pgmSuaveNome[30];
@@ -36,8 +36,8 @@ int main(){
 	   exit(1);
 	}
 	
-	
-	fscanf(pgm,"%s",);
+	char *lixo;
+	fscanf(pgm,"%s",lixo);
 	
 	//scaneia o tamanho e o lim
 	fscanf(pgm, "%d %d %d", &m, &n, &scale);
@@ -48,13 +48,13 @@ int main(){
 	lerImagem(M,m,n);
 	
 	//decleara matriz da imagem de saida
-	unsigned char M2**;
+	unsigned char **M2;
 	M2 = criarMatriz(m,n);
 	
 	//trata a matriz e joga em outra.
-	tratarimagem(M2,M,m,n);		
+	tratarImagem(M2,M,m,n);		
 
-    pgmSuave = fopen(pgmSuave , "w+");
+    pgmSuave = fopen(pgmSuaveNome , "w+");
     if(pgmSuave == NULL){
 	   printf("Não pôde ser aberto");
 	   exit(1);
@@ -63,25 +63,24 @@ int main(){
 	//cria o arquivo de saida.
 	criarNovoArquivo(M2,pgmSuaveNome,m,n,scale);
 		
-
 	return 0;
 }
 
 
 unsigned char** criarMatriz(int x,int y){
-	unsigned char temp**;
+	unsigned char **temp;
 	
 	temp =(unsigned char **)malloc(x * sizeof(char*));
 	
 	int i;
 	for(i = 0 ; i < x; i++){
-		temp[i] =(unsigned char*) chamalloc(y * sizeof(unsigned char));
+		temp[i] =(unsigned char*) malloc(y * sizeof(unsigned char));
 	}
 
 	return temp;
 }
 
-void bordear(unsigned char M**,int x,int y){
+void bordear(unsigned char **M,int x,int y){
 
 	int i;
 	for(i = 0; i < x +2;i++){
@@ -95,9 +94,9 @@ void bordear(unsigned char M**,int x,int y){
 	}
 }
 
-void lerImagem(	unsigned char M**,int x,int y){
+void lerImagem(	unsigned char **M,int x,int y){
 	int i,j;
-	char lixo*;
+	char *lixo;
 	unsigned char temp;
 	for(i = 1 ; i< x;i++){
 		for(j=1 ; j < y;j++){
@@ -109,20 +108,37 @@ void lerImagem(	unsigned char M**,int x,int y){
 			}else if(temp == ' '){
 				j--;
 				continue;
-			}else(){
+			}else{
 				M[i][j] = temp;
 			}	
 
 		}
 	}
 }
-void tratarImagem(unsigned char M2**,unsigned char M**,int x,int y){
+
+void tratarImagem(unsigned char **M2,unsigned char **M,int x,int y){
 	
+	int i,j;
 	unsigned char media;
 	for(i = 1 ; i< x;i++){
 		for(j=1 ; j < y;j++){
 			media = M[i+1][j+1]/9 +M[i+1][j]/9 +M[i+1][j-1]/9 +M[i][j+1]/9 +M[i][j]/9 +M[i][j-1]/9 +M[i-1][j+1]/9 +M[i-1][j]/9 +M[i-1][j-1]/9; 
-			m[i][j] = media
+			M2[i][j] = media;
+		}
+	}
+}
+
+void criarNovoArquivo(unsigned char **M2,char *saidaNome,int x,int y,int lim){
+	rewind(pgm);
+
+	int i,j;
+	fprintf(pgm, "P2 \n%d %d \n%d", &x, &y, &lim);
+	
+	for(i = 0 ; i< x;i++){
+		for(j=0 ; j < y;j++){
+			if(j %10 == 0)
+				printf("\n");
+			fprintf(pgm,"%c ", M2[i][j]);
 		}
 	}
 }
